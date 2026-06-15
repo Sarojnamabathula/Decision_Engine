@@ -1,0 +1,58 @@
+rules:
+  - id: LOOP_GUARD
+    priority: 1
+    condition:
+      follow_up_count: {gte: 3}
+    action: end_interview
+    reason: max_follow_ups_reached
+    explanation: "Maximum consecutive follow-ups reached. Proceeding to end interview."
+
+  - id: HIGH_FATIGUE
+    priority: 2
+    condition:
+      candidate_fatigue: {gte: 0.85}
+    action: end_interview
+    reason: candidate_fatigue_critical
+    explanation: "Candidate fatigue exceeded critical threshold."
+
+  - id: CONTRADICTION
+    priority: 3
+    condition:
+      contradiction_detected: {eq: true}
+    action: follow_up
+    reason: contradiction_detected
+    explanation: "Candidate contradicted previous answers. Clarification required."
+
+  - id: STRONG_ANSWER
+    priority: 10
+    condition:
+      composite_score: {gte: 0.78}
+      confidence: {gte: 0.70}
+    action: next_question
+    reason: strong_confident_answer
+    explanation: "Candidate demonstrated strong understanding with high evaluator confidence."
+
+  - id: EVALUATOR_UNCERTAINTY
+    priority: 15
+    condition:
+      score_confidence_gap: {gte: 0.40}
+    action: follow_up
+    reason: uncertain_evaluator_signals
+    explanation: "High discrepancy between score and evaluator confidence requires a follow-up."
+
+  - id: BORDERLINE_SCORE_LOW_CONFIDENCE
+    priority: 20
+    condition:
+      composite_score: {gte: 0.45, lt: 0.78}
+      confidence: {lt: 0.50}
+    action: follow_up
+    reason: borderline_score_low_confidence
+    explanation: "The candidate demonstrated partial understanding but evaluator certainty was insufficient. A follow-up question is warranted to clarify depth of knowledge."
+
+  - id: POOR_ANSWER
+    priority: 25
+    condition:
+      composite_score: {lt: 0.45}
+    action: follow_up
+    reason: poor_score
+    explanation: "The candidate's answer was poor. Prompting for clarification."
